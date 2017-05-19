@@ -91,9 +91,15 @@ public class ManageOrderPanel extends JPanel
 
 					if (result)
 					{
+						String message;
+						if (customerNumberField.getText().length() == 0)
+							message = "Guest 고객님 무료쿠폰이 배송되었습니다.";
+						else
+							message = customerNumberField.getText() + "번 고객님 무료쿠폰이 배송되었습니다.";
+
 						JOptionPane.showMessageDialog(
 							ManageOrderPanel.this,
-							customerNumberField.getText() + "번 고객님 무료쿠폰이 배송되었습니다.",
+							message,
 							"Coupon!",
 							JOptionPane.PLAIN_MESSAGE, null
 						);

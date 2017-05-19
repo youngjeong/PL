@@ -17,10 +17,12 @@ public class CustomerController
 		return instance;
 	}
 
+	private Customer guest;
 	private HashMap<String, Customer> customerInfoMap;
 
 	public CustomerController()
 	{
+		guest = new Customer();
 		customerInfoMap = new HashMap<String, Customer>();
 
 		FileInputStream fis = null;
@@ -142,18 +144,33 @@ public class CustomerController
 		boolean result = false;
 		try
 		{
-			if (!customerInfoMap.containsKey(number))
-				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
+			if (number == null || number.length() == 0)
+			{
+				if (date == null || date.length() == 0)
+					throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
 
-			if (date == null || date.length() == 0)
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
+				if(!date.matches("[0-9|/]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
 
-			if(!date.matches("[0-9|/]*"))
-				throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
+				result = guest.addOrder(date);
+			}
+			else
+			{
+				if(!number.matches("[0-9]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_SPECIAL_CHARACTER, "고객번호에 비정상적인 문자가 입력되었습니다.");
 
-			Customer customer = customerInfoMap.get(number);
-			result = customer.addOrder(date);
+				if (!customerInfoMap.containsKey(number))
+					throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
 
+				if (date == null || date.length() == 0)
+					throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
+
+				if(!date.matches("[0-9|/]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
+
+				Customer customer = customerInfoMap.get(number);
+				result = customer.addOrder(date);
+			}
 		}
 		catch (LogicalException ex)
 		{
@@ -168,18 +185,34 @@ public class CustomerController
 	{
 		try
 		{
-			if (!customerInfoMap.containsKey(number))
-				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
+			if (number == null || number.length() == 0)
+			{
+				if (date == null || date.length() == 0)
+					throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
 
-			if (date == null || date.length() == 0)
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
+				if(!date.matches("[0-9|/]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
 
-			if(!date.matches("[0-9|/]*"))
-				throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
+				guest.deleteOrder(date);
+			}
+			else
+			{
+				if(!number.matches("[0-9]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_SPECIAL_CHARACTER, "고객번호에 비정상적인 문자가 입력되었습니다.");
 
-			Customer customer = customerInfoMap.get(number);
+				if (!customerInfoMap.containsKey(number))
+					throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
 
-			customer.deleteOrder(date);
+				if (date == null || date.length() == 0)
+					throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
+
+				if (!date.matches("[0-9|/]*"))
+					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
+
+				Customer customer = customerInfoMap.get(number);
+
+				customer.deleteOrder(date);
+			}
 		}
 		catch (LogicalException ex)
 		{
