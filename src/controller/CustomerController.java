@@ -5,11 +5,8 @@ import exceptions.LogicalException;
 import model.Customer;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.Character.isDigit;
 
 public class CustomerController
 {
@@ -113,9 +110,8 @@ public class CustomerController
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
-			{
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "해당 고객을 찾을 수 없습니다.");
-			}
+				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
+
 			customerInfoMap.remove(number);
 		}
 		catch (LogicalException ex)
@@ -131,7 +127,7 @@ public class CustomerController
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "해당 고객을 찾을 수 없습니다.");
+				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
 		}
 		catch (LogicalException ex)
 		{
@@ -147,7 +143,7 @@ public class CustomerController
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "해당 고객을 찾을 수 없습니다.");
+				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
 
 			if (date == null || date.length() == 0)
 				throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");
@@ -173,7 +169,7 @@ public class CustomerController
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
-				throw new LogicalException(ExceptionCode.NO_INFORMATION, "해당 고객을 찾을 수 없습니다.");
+				throw new LogicalException(ExceptionCode.CANNOT_FIND_CUSTOMER, "해당 고객을 찾을 수 없습니다.");
 
 			if (date == null || date.length() == 0)
 				throw new LogicalException(ExceptionCode.NO_INFORMATION, "주문날짜가 입력되지 않았습니다.");

@@ -109,7 +109,6 @@ public class ManageOrderPanel extends JPanel
 
 	private class CancelActionListener implements ActionListener
 	{
-
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{

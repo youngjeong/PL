@@ -89,16 +89,6 @@ public class Customer implements Serializable
 		this.date = date;
 	}
 
-	public int getCouponCount()
-	{
-		return couponCount;
-	}
-
-	public ArrayList<String> getOrders()
-	{
-		return orders;
-	}
-
 	public boolean addOrder(String newOrder)
 	{
 		orders.add(newOrder);
@@ -116,7 +106,7 @@ public class Customer implements Serializable
 	public void deleteOrder(String delDate) throws LogicalException
 	{
 		if (orders.indexOf(delDate) == -1)
-			throw new LogicalException(ExceptionCode.NO_INFORMATION, "해당 주문을 찾을 수 없습니다.");
+			throw new LogicalException(ExceptionCode.CANNOT_FIND_ORDER, "해당 주문을 찾을 수 없습니다.");
 
 		orders.remove(delDate);
 
