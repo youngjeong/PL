@@ -89,8 +89,6 @@ public class ManageOrderPanel extends JPanel
 						dateField.getText()
 					);
 
-					clear();
-
 					if (result)
 					{
 						JOptionPane.showMessageDialog(
@@ -100,6 +98,8 @@ public class ManageOrderPanel extends JPanel
 							JOptionPane.PLAIN_MESSAGE, null
 						);
 					}
+
+					clear();
 				}
 			};
 
