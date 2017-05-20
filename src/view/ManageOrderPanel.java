@@ -12,7 +12,7 @@ public class ManageOrderPanel extends JPanel
 	private static final String[] menu = {"김밥", "떡볶이", "순대", "오뎅", "튀김"};
 	
 	private JTextField dateField;
-	private JTextField customerNumberField;
+	private JTextField numberField;
 	private JComboBox<String> menuComboBox;
 
 	private JButton orderButton;
@@ -36,9 +36,9 @@ public class ManageOrderPanel extends JPanel
 		customerNumberLabel.setBounds(new Rectangle(100, 130, 100, 50));
 		add(customerNumberLabel);
 
-		customerNumberField = new JTextField();
-		customerNumberField.setBounds(new Rectangle(300, 130, 200, 50));
-		add(customerNumberField);
+		numberField = new JTextField();
+		numberField.setBounds(new Rectangle(300, 130, 200, 50));
+		add(numberField);
 
 		JLabel menuLabel = new JLabel("메    뉴");
 		menuLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -61,10 +61,10 @@ public class ManageOrderPanel extends JPanel
 
 	}
 
-	public void clear()
+	private void clear()
 	{
 		dateField.setText("");
-		customerNumberField.setText("");
+		numberField.setText("");
 		menuComboBox.setSelectedIndex(0);
 	}
 
@@ -85,17 +85,17 @@ public class ManageOrderPanel extends JPanel
 				public void run()
 				{
 					boolean result = CustomerController.getInstance().addOrder(
-						customerNumberField.getText(),
+						numberField.getText(),
 						dateField.getText()
 					);
 
 					if (result)
 					{
 						String message;
-						if (customerNumberField.getText().length() == 0)
+						if (numberField.getText().length() == 0)
 							message = "Guest 고객님 무료쿠폰이 배송되었습니다.";
 						else
-							message = customerNumberField.getText() + "번 고객님 무료쿠폰이 배송되었습니다.";
+							message = numberField.getText() + "번 고객님 무료쿠폰이 배송되었습니다.";
 
 						JOptionPane.showMessageDialog(
 							ManageOrderPanel.this,
@@ -123,7 +123,7 @@ public class ManageOrderPanel extends JPanel
 				public void run()
 				{
 					CustomerController.getInstance().cancelOrder(
-						customerNumberField.getText(),
+						numberField.getText(),
 						dateField.getText()
 					);
 

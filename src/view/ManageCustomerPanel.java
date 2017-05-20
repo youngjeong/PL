@@ -76,7 +76,7 @@ public class ManageCustomerPanel extends JPanel
 
 	}
 
-	public void clear()
+	private void clear()
 	{
 		numberField.setText("");
 		nameField.setText("");

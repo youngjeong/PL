@@ -30,7 +30,7 @@ public class CustomerController
 
 		try
 		{
-			fis = new FileInputStream("customer.txt");
+			fis = new FileInputStream("custom.txt");
 			ois = new ObjectInputStream(fis);
 
 			HashMap<String, Customer> tempMap = (HashMap)ois.readObject();

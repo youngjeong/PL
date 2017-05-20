@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class LogicalException extends Exception
 {
-	public static JPanel root;
+	private JPanel root;
 	private ExceptionCode code;
 
 	public LogicalException(ExceptionCode code, String message)
