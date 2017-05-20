@@ -64,7 +64,7 @@ public class CustomerController
 
 		try
 		{
-			fos = new FileOutputStream("customer.txt");
+			fos = new FileOutputStream("custom.txt");
 			oos = new ObjectOutputStream(fos);
 
 			oos.writeObject(customerInfoMap);
