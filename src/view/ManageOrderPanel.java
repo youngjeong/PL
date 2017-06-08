@@ -11,7 +11,7 @@ public class ManageOrderPanel extends JPanel
 {
 	private static final String[] menu = {"김밥", "떡볶이", "순대", "오뎅", "튀김"};
 	
-	private JTextField dateField;
+	private DateTextField dateField;
 	private JTextField numberField;
 	private JComboBox<String> menuComboBox;
 
@@ -27,7 +27,7 @@ public class ManageOrderPanel extends JPanel
 		dateLabel.setBounds(new Rectangle(100, 30, 100, 50));
 		add(dateLabel);
 
-		dateField = new JTextField();
+		dateField = new DateTextField();
 		dateField.setBounds(new Rectangle(300, 30, 200, 50));
 		add(dateField);
 
@@ -86,7 +86,8 @@ public class ManageOrderPanel extends JPanel
 				{
 					boolean result = CustomerController.getInstance().addOrder(
 						numberField.getText(),
-						dateField.getText()
+						dateField.getText(),
+						(String)menuComboBox.getSelectedItem()
 					);
 
 					if (result)

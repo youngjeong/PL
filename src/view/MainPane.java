@@ -17,6 +17,9 @@ public class MainPane extends JPanel
 		final ManageCustomerPanel manageCustomerPanel = new ManageCustomerPanel();
 		tabbedPane.addTab(manageCustomerPanel.toString(), null, manageCustomerPanel, null);
 
+		final SalesInquiryPanel salesInquiryPanel = new SalesInquiryPanel();
+		tabbedPane.addTab(salesInquiryPanel.toString(), null, salesInquiryPanel, null);
+
 		add(tabbedPane);
 	}
 

@@ -13,7 +13,7 @@ public class ManageCustomerPanel extends JPanel
 	private JTextField numberField;
 	private JTextField nameField;
 	private JTextField phoneField;
-	private JTextField joinDateField;
+	private DateTextField joinDateField;
 
 	private JButton registerButton;
 	private JButton searchButton;
@@ -55,7 +55,7 @@ public class ManageCustomerPanel extends JPanel
 		joinDateLabel.setBounds(new Rectangle(100, 210, 100, 50));
 		add(joinDateLabel);
 
-		joinDateField = new JTextField();
+		joinDateField = new DateTextField();
 		joinDateField.setBounds(new Rectangle(300, 210, 200, 50));
 		add(joinDateField);
 

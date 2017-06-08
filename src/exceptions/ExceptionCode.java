@@ -11,5 +11,7 @@ public enum ExceptionCode
 	CANNOT_FIND_CUSTOMER,
 	CANNOT_FIND_ORDER,
 
+	FILE_LOCKED,
+
 	NO_INFORMATION
 }

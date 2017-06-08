@@ -3,8 +3,11 @@ package controller;
 import exceptions.ExceptionCode;
 import exceptions.LogicalException;
 import model.Customer;
+import model.Order;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +21,30 @@ public class CustomerController
 	}
 
 	private Customer guest;
-	private HashMap<String, Customer> customerInfoMap;
+
+	private FileLock lock;
+	private FileChannel channel;
+
+	private HashMap<String, Integer> price = new HashMap<String, Integer>();
 
 	public CustomerController()
 	{
 		guest = new Customer();
+		price.put("김밥", 1500);
+		price.put("떡볶이", 2500);
+		price.put("순대", 2000);
+		price.put("오뎅", 1000);
+		price.put("튀김", 3000);
+	}
+
+	public int getMenuCost(String menu)
+	{
+		return price.get(menu);
+	}
+
+	private HashMap<String, Customer> loadCustomInfoMap()
+	{
+		HashMap<String, Customer> customerInfoMap;
 		customerInfoMap = new HashMap<String, Customer>();
 
 		FileInputStream fis = null;
@@ -30,6 +52,15 @@ public class CustomerController
 
 		try
 		{
+			File f = new File("custom.txt");
+			channel = new RandomAccessFile(f, "rw").getChannel();
+			lock = channel.tryLock();
+
+			if (lock == null) {
+				channel.close();
+				throw new LogicalException(ExceptionCode.FILE_LOCKED, "이미 파일이 다른 곳에서 수정중입니다.");
+			}
+
 			fis = new FileInputStream("custom.txt");
 			ois = new ObjectInputStream(fis);
 
@@ -37,6 +68,8 @@ public class CustomerController
 
 			for (Map.Entry<String, Customer> entry : tempMap.entrySet())
 				customerInfoMap.put(entry.getKey(), entry.getValue());
+
+			guest = (Customer)ois.readObject();
 		}
 		catch (FileNotFoundException fnex) {}
 		catch (Exception ex)
@@ -55,9 +88,11 @@ public class CustomerController
 				ex.printStackTrace();
 			}
 		}
+
+		return customerInfoMap;
 	}
 
-	private void saveData()
+	private void saveData(HashMap<String, Customer> customerInfoMap)
 	{
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
@@ -68,6 +103,12 @@ public class CustomerController
 			oos = new ObjectOutputStream(fos);
 
 			oos.writeObject(customerInfoMap);
+			oos.writeObject(guest);
+
+			if (lock != null) {
+				lock.release();
+				channel.close();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -89,6 +130,7 @@ public class CustomerController
 
 	public synchronized void setCustomer(String number, String name, String phone, String date)
 	{
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
 		Customer customer = new Customer();
 		try
 		{
@@ -104,11 +146,12 @@ public class CustomerController
 			ex.showExceptionPopup();
 		}
 
-		saveData();
+		saveData(customerInfoMap);
 	}
 
 	public synchronized void deleteCustomer(String number)
 	{
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
@@ -121,11 +164,12 @@ public class CustomerController
 			ex.showExceptionPopup();
 		}
 
-		saveData();
+		saveData(customerInfoMap);
 	}
 
 	public synchronized Customer findCustomer(String number)
 	{
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
 		try
 		{
 			if (!customerInfoMap.containsKey(number))
@@ -139,8 +183,9 @@ public class CustomerController
 		return customerInfoMap.get(number);
 	}
 
-	public synchronized boolean addOrder(String number, String date)
+	public synchronized boolean addOrder(String number, String date, String menu)
 	{
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
 		boolean result = false;
 		try
 		{
@@ -152,7 +197,7 @@ public class CustomerController
 				if(!date.matches("[0-9|/]*"))
 					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
 
-				result = guest.addOrder(date);
+				result = guest.addOrder(date, menu);
 			}
 			else
 			{
@@ -169,7 +214,7 @@ public class CustomerController
 					throw new LogicalException(ExceptionCode.INVALID_FORMAT_DATE, "날짜에 비정상적인 문자가 입력되었습니다.");
 
 				Customer customer = customerInfoMap.get(number);
-				result = customer.addOrder(date);
+				result = customer.addOrder(date, menu);
 			}
 		}
 		catch (LogicalException ex)
@@ -177,12 +222,13 @@ public class CustomerController
 			ex.showExceptionPopup();
 		}
 
-		saveData();
+		saveData(customerInfoMap);
 		return result;
 	}
 
 	public synchronized void cancelOrder(String number, String date)
 	{
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
 		try
 		{
 			if (number == null || number.length() == 0)
@@ -219,7 +265,73 @@ public class CustomerController
 			ex.showExceptionPopup();
 		}
 
-		saveData();
+		saveData(customerInfoMap);
 	}
 
+	public HashMap<String, Integer> inquiry(String startDate, String endDate)
+	{
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		HashMap<String, Customer> customerInfoMap = loadCustomInfoMap();
+		for (Customer customer : customerInfoMap.values())
+		{
+			for (Order order : customer.getOrders())
+			{
+				if (startDate.compareTo(order.getDate()) <= 0 &&
+					order.getDate().compareTo(endDate) <= 0)
+				{
+					if (!result.containsKey(order.getMenu()))
+						result.put(order.getMenu(), 0);
+
+					int prev = result.get(order.getMenu());
+					result.put(order.getMenu(), prev + 1);
+				}
+			}
+		}
+
+		for (Order order : guest.getOrders())
+		{
+			if (startDate.compareTo(order.getDate()) <= 0 &&
+				order.getDate().compareTo(endDate) <= 0)
+			{
+				if (!result.containsKey(order.getMenu()))
+					result.put(order.getMenu(), 0);
+
+				int prev = result.get(order.getMenu());
+				result.put(order.getMenu(), prev + 1);
+			}
+		}
+
+		for (Customer customer : customerInfoMap.values())
+		{
+			for (String couponDate : customer.getCoupons())
+			{
+				if (startDate.compareTo(couponDate) <= 0 &&
+					couponDate.compareTo(endDate) <= 0)
+				{
+					if (!result.containsKey("쿠폰"))
+						result.put("쿠폰", 0);
+
+					int prev = result.get("쿠폰");
+					result.put("쿠폰", prev + 1);
+				}
+			}
+		}
+
+		for (String couponDate : guest.getCoupons())
+		{
+			if (startDate.compareTo(couponDate) <= 0 &&
+				couponDate.compareTo(endDate) <= 0)
+			{
+				if (!result.containsKey("쿠폰"))
+					result.put("쿠폰", 0);
+
+				int prev = result.get("쿠폰");
+				result.put("쿠폰", prev + 1);
+			}
+		}
+
+		saveData(customerInfoMap);
+
+		return result;
+	}
 }

@@ -5,6 +5,8 @@ import exceptions.LogicalException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Customer implements Serializable
 {
@@ -13,11 +15,13 @@ public class Customer implements Serializable
 	private String phone;
 	private String date;
 	private int couponCount;
-	private ArrayList<String> orders;
+	private ArrayList<Order> orders;
+	private ArrayList<String> coupons;
 
 	public Customer()
 	{
-		orders = new ArrayList<String>();
+		orders = new ArrayList<Order>();
+		coupons = new ArrayList<String>();
 	}
 
 	public String getNumber()
@@ -89,14 +93,24 @@ public class Customer implements Serializable
 		this.date = date;
 	}
 
-	public boolean addOrder(String newOrder)
+	public boolean addOrder(String addDate, String menu)
 	{
-		orders.add(newOrder);
+		orders.add(new Order(addDate, menu));
+		Collections.sort(orders, new Comparator<Order>()
+		{
+			@Override
+			public int compare(Order o1, Order o2)
+			{
+				return o1.getDate().compareTo(o2.getDate());
+			}
+		});
 
 		this.couponCount ++;
 		if (couponCount >= 3)
 		{
 			couponCount = 0;
+			coupons.add(addDate);
+			Collections.sort(coupons);
 			return true;
 		}
 
@@ -105,13 +119,41 @@ public class Customer implements Serializable
 
 	public void deleteOrder(String delDate) throws LogicalException
 	{
-		if (orders.indexOf(delDate) == -1)
+		boolean fetched = false;
+		for (Order order : orders)
+		{
+			if (order.getDate().compareTo(delDate) == 0)
+			{
+				orders.remove(order);
+				fetched = true;
+				break;
+			}
+		}
+
+		if (!fetched)
 			throw new LogicalException(ExceptionCode.CANNOT_FIND_ORDER, "해당 주문을 찾을 수 없습니다.");
 
-		orders.remove(delDate);
+		Collections.sort(orders, new Comparator<Order>()
+		{
+			@Override
+			public int compare(Order o1, Order o2)
+			{
+				return o1.getDate().compareTo(o2.getDate());
+			}
+		});
 
 		this.couponCount --;
 		if (couponCount < 0)
 			couponCount = 0;
+	}
+
+	public ArrayList<Order> getOrders()
+	{
+		return orders;
+	}
+
+	public ArrayList<String> getCoupons()
+	{
+		return coupons;
 	}
 }
