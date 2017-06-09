@@ -54,12 +54,6 @@ public class CustomerController
 		{
 			File f = new File("custom.txt");
 			channel = new RandomAccessFile(f, "rw").getChannel();
-			lock = channel.tryLock();
-
-			if (lock == null) {
-				channel.close();
-				throw new LogicalException(ExceptionCode.FILE_LOCKED, "이미 파일이 다른 곳에서 수정중입니다.");
-			}
 
 			fis = new FileInputStream("custom.txt");
 			ois = new ObjectInputStream(fis);
@@ -70,6 +64,13 @@ public class CustomerController
 				customerInfoMap.put(entry.getKey(), entry.getValue());
 
 			guest = (Customer)ois.readObject();
+
+			lock = channel.tryLock();
+
+			if (lock == null) {
+				channel.close();
+				throw new LogicalException(ExceptionCode.FILE_LOCKED, "이미 파일이 다른 곳에서 수정중입니다.");
+			}
 		}
 		catch (FileNotFoundException fnex) {}
 		catch (Exception ex)
