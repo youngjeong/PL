@@ -145,8 +145,10 @@ public class CustomerController
 		{
 			ex.showExceptionPopup();
 		}
-
-		saveData(customerInfoMap);
+		finally
+		{
+			saveData(customerInfoMap);
+		}
 	}
 
 	public synchronized void deleteCustomer(String number)
@@ -163,8 +165,10 @@ public class CustomerController
 		{
 			ex.showExceptionPopup();
 		}
-
-		saveData(customerInfoMap);
+		finally
+		{
+			saveData(customerInfoMap);
+		}
 	}
 
 	public synchronized Customer findCustomer(String number)
@@ -178,6 +182,10 @@ public class CustomerController
 		catch (LogicalException ex)
 		{
 			ex.showExceptionPopup();
+		}
+		finally
+		{
+			saveData(customerInfoMap);
 		}
 
 		return customerInfoMap.get(number);
@@ -221,8 +229,10 @@ public class CustomerController
 		{
 			ex.showExceptionPopup();
 		}
-
-		saveData(customerInfoMap);
+		finally
+		{
+			saveData(customerInfoMap);
+		}
 		return result;
 	}
 
@@ -264,8 +274,10 @@ public class CustomerController
 		{
 			ex.showExceptionPopup();
 		}
-
-		saveData(customerInfoMap);
+		finally
+		{
+			saveData(customerInfoMap);
+		}
 	}
 
 	public HashMap<String, Integer> inquiry(String startDate, String endDate)
