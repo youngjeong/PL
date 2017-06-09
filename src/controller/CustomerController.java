@@ -100,16 +100,16 @@ public class CustomerController
 
 		try
 		{
+			if (lock != null) {
+				lock.release();
+				channel.close();
+			}
+
 			fos = new FileOutputStream("custom.txt");
 			oos = new ObjectOutputStream(fos);
 
 			oos.writeObject(customerInfoMap);
 			oos.writeObject(guest);
-
-			if (lock != null) {
-				lock.release();
-				channel.close();
-			}
 		}
 		catch (Exception ex)
 		{
